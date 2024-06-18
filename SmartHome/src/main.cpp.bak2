@@ -1,0 +1,97 @@
+/*
+    Esp32 Websockets Client
+
+    This sketch:
+        1. Connects to a WiFi network
+        2. Connects to a Websockets server
+        3. Sends the websockets server a message ("Hello Server")
+        4. Prints all incoming messages while the connection is open
+
+    Hardware:
+        For this sketch you only need an ESP32 board.
+
+    Created 15/02/2019
+    By Gil Maimon
+    https://github.com/gilmaimon/ArduinoWebsockets
+
+*/
+
+#include <ArduinoWebsockets.h>
+#include <ArduinoJson.h>
+#include <WiFi.h>
+
+using namespace websockets;
+
+#define TEST_LED_PIN 2
+
+const char *ssid = "612";            // Enter SSID
+const char *password = "wififor612"; // Enter Password
+// const char *websockets_server_host = "192.168.0.191"; // Enter server adress
+const char *websockets_server_host = "192.168.0.198"; // Enter server adress
+const uint16_t websockets_server_port = 8080;         // Enter server port
+
+WebsocketsClient client;
+StaticJsonDocument<200> doc;
+
+void setup()
+{
+    Serial.begin(9600);
+    // Connect to wifi
+    WiFi.begin(ssid, password);
+
+    // Wait some time to connect to wifi
+    for (int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++)
+    {
+        Serial.print(".");
+        delay(1000);
+    }
+
+    // Check if connected to wifi
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("No Wifi!");
+        return;
+    }
+
+    IPAddress ip = WiFi.localIP();
+    Serial.print("Local IP: ");
+    Serial.println(ip.toString());
+
+    Serial.println("Connected to Wifi, Connecting to server.");
+    // try to connect to Websockets server
+    bool connected = client.connect(websockets_server_host, websockets_server_port, "/ws/gatewayClient/gateway1");
+    if (connected)
+    {
+        Serial.println("Connected!");
+        // client.send("Hello Server");
+    }
+    else
+    {
+        Serial.println("Not Connected!");
+    }
+
+    // run callback when messages are received
+    client.onMessage([&](WebsocketsMessage message)
+                     {Serial.print("Got Message: ");Serial.println(message.data()); });
+
+    pinMode(TEST_LED_PIN, OUTPUT);
+
+    doc["instructionID"] = "";
+    doc["xResult"] = "";
+    doc["message"] = "";
+}
+
+void loop()
+{
+    // let the websockets client check for incoming messages
+    if (client.available())
+    {
+        client.poll();
+    }
+
+    digitalWrite(TEST_LED_PIN, !digitalRead(TEST_LED_PIN));
+
+    client.send(".");
+
+    delay(2000);
+}
