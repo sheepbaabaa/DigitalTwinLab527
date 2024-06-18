@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "8.142.79.40",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "DT",
+            "database": "dtlab",
+            "username": "dtlab",
+            "password": "6NNhrfrk3xBtN5AT"
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3779328 */
+  src: url('iconfont.woff2?t=1678784292069') format('woff2'),
+       url('iconfont.woff?t=1678784292069') format('woff'),
+       url('iconfont.ttf?t=1678784292069') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zuojiantou:before {
+  content: "\e610";
+}
+
+.icon-downarrow:before {
+  content: "\e60a";
+}
+
+.icon-tuichu:before {
+  content: "\e600";
+}
+
+.icon-rizhi:before {
+  content: "\e617";
+}
+
+.icon-zhankai:before {
+  content: "\e62c";
+}
+
+.icon-shouqi:before {
+  content: "\e63e";
+}
+
+.icon-yonghu:before {
+  content: "\e633";
+}
+
+.icon-model-lib:before {
+  content: "\e615";
+}
+
+.icon-ico_shebeiguanli_shebeixinxiweihu:before {
+  content: "\e8f9";
+}
+
+.icon-quanjufangda2:before {
+  content: "\e989";
+}
+
+.icon-liulan:before {
+  content: "\e7d0";
+}
+
+.icon-renyuan-:before {
+  content: "\e611";
+}
+
+.icon-huiyishi:before {
+  content: "\e634";
+}
+
+.icon-xitongguanli:before {
+  content: "\e60f";
+}
+
+.icon-quanju:before {
+  content: "\e753";
+}
+
