@@ -1,0 +1,12 @@
+com.mobinets.digitaltwinlab
+com.mobinets.digitaltwinlab.annotation
+com.mobinets.digitaltwinlab.aspect
+com.mobinets.digitaltwinlab.config
+com.mobinets.digitaltwinlab.controller
+com.mobinets.digitaltwinlab.controller.interceptor
+com.mobinets.digitaltwinlab.dao
+com.mobinets.digitaltwinlab.entity
+com.mobinets.digitaltwinlab.service
+com.mobinets.digitaltwinlab.util
+com.mobinets.digitaltwinlab.websocket
+com.mobinets.digitaltwinlab.websocket.impl

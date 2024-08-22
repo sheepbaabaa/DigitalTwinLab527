@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>websocket通讯</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+
+<body>
+    <div class="layui-container">
+        <div class="layui-progress" style="margin: 15px 0 30px;">
+            <div class="layui-progress-bar" lay-percent="100%"></div>
+        </div>
+    </div>
+
+    <div class="layui-container">
+        <div class="layui-row layui-col-space30" style="margin: 0 auto; max-width: 100%;">
+            <div class="layui-form">
+                <div id="currentUserId">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            [currentUserId]
+                        </label>
+                        <div class="layui-input-block">
+                            <input id="userId" name="userId" type="text" class="layui-input" value="10" />
+                        </div>
+                        <br />
+                        <div class="layui-input-block">
+                            <button class="layui-btn" onclick="openSocket()"> 开启socket </button>
+                            <button class="layui-btn" onclick="closeSocket()"> 关闭socket </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="layui-container">
+        <div class="layui-row layui-col-space30" style="margin: 0 auto; max-width: 100%;">
+            <div class="layui-form">
+                <div id="toUsersId">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            [toUserId]
+                        </label>
+                        <div class="layui-input-block">
+                            <input id="toUserId" name="toUserId" type="text" value="20" class="layui-input" />
+                        </div>
+                        <br />
+                        <label class="layui-form-label">
+                            [content]
+                        </label>
+                        <div class="layui-input-block">
+                            <input id="contentText" name="contentText" type="text" value="hello websocket"
+                                class="layui-input">
+                        </div>
+                        <br />
+                        <div class="layui-input-block">
+                            <button class="layui-btn" onclick="sendMessage()"> 发送消息 </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-container">
+        <div class="layui-row layui-col-space30" style="margin: 0 auto; max-width: 100%;">
+            <div class="layui-form">
+                <div id="toGateway">
+                    <div class="layui-form-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">
+                                [action]
+                            </label>
+                            <div class="layui-input-block">
+                                <select id="action" name="action" lay-filter="action">
+                                    <option value="0"></option>
+                                    <option value="1"> set_power_switch </option>
+                                    <option value="2"> set_air_conditioner </option>
+                                </select>
+                            </div>
+                        </div>
+                        <label class="layui-form-label">
+                            [device_id]
+                        </label>
+                        <div class="layui-input-block">
+                            <input id="device_id" name="device_id" type="text" value="1" class="layui-input" />
+                        </div>
+                        <br />
+
+                        <div id="power_switch" style="display:none">
+                            <label class="layui-form-label">
+                                [switch]
+                            </label>
+                            <div class="layui-input-block">
+                                <input id="switch" name="switch" type="text" value="0" class="layui-input" />
+                            </div>
+                            <br />
+                        </div>
+
+                        <div id="air_conditioner" style="display:none">
+                            <label class="layui-form-label">
+                                [mode]
+                            </label>
+                            <div class="layui-input-block">
+                                <input id="mode" name="mode" type="text" value="1" class="layui-input" />
+                            </div>
+                            <br />
+                            <label class="layui-form-label">
+                                [power]
+                            </label>
+                            <div class="layui-input-block">
+                                <input id="power" name="power" type="text" value="1" class="layui-input" />
+                            </div>
+                            <br />
+                            <label class="layui-form-label">
+                                [basic_fan]
+                            </label>
+                            <div class="layui-input-block">
+                                <input id="basic_fan" name="basic_fan" type="text" value="0" class="layui-input" />
+                            </div>
+                            <br />
+                            <label class="layui-form-label">
+                                [temp]
+                            </label>
+                            <div class="layui-input-block">
+                                <input id="temp" name="temp" type="text" value="26" class="layui-input" />
+                            </div>
+                            <br />
+                        </div>
+
+                        <label class="layui-form-label">
+                            [echo]
+                        </label>
+                        <div class="layui-input-block">
+                            <input id="echo" name="echo" type="text" value="test" class="layui-input" />
+                        </div>
+                        <br />
+
+                        <div class="layui-input-block">
+                            <button class="layui-btn" onclick="sendInstruction()"> 发送指令 </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-container">
+        <fieldset class="layui-elem-field">
+            <legend> MESSAGE </legend>
+            <div id="context" class="layui-field-box">
+            </div>
+        </fieldset>
+    </div>
+
+    <script src="layui/layui.js"></script>
+</body>
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.min.js"></script>
+<!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>-->
+
+<script>
+    var socket;
+
+    function openSocket() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            console.log("您的浏览器支持WebSocket");
+
+            // 实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+            const socketUrl = "ws://192.168.0.191:8080/dtlab/ws/webClient/" + $("#userId").val();
+            console.log(socketUrl);
+            if (socket != null) {
+                // socket.close();
+                // socket = null;
+                alert("socket已开启，请勿重复开启")
+            } else {
+                socket = new WebSocket(socketUrl);
+            }
+
+            //打开事件
+            socket.onopen = function () {
+                alert("websocket已打开");
+                // socket.send("这是来自客户端: " + location.href +"的消息   " + new Date());
+            };
+            //获得消息事件
+            socket.onmessage = function (msg) {
+                console.log("接收到信息：" + msg.data);
+                appendMessage("接收到信息：" + msg.data);
+                // alert("接收信息：" + msg.data);
+                // document.writeln("接收信息：" + msg.data);
+
+            };
+            //关闭事件
+            socket.onclose = function () {
+                socket.close();
+                socket = null;
+                appendMessage("WebSocket服务器已关闭")
+
+                // alert("websocket已关闭");
+            };
+            //发生了错误事件
+            socket.onerror = function () {
+                alert("websocket发生了错误")
+            }
+        }
+    }
+
+    function closeSocket() {
+        if (socket != null) {
+            socket.close();
+            socket = null;
+            appendMessage("已关闭WebSocket")
+            // alert("Websocket已关闭")
+        } else {
+            alert("Websocket未开启，请开启")
+        }
+    }
+
+    function sendMessage() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            if (socket == null) {
+                alert("请开启socket");
+                return;
+            }
+            console.log("您的浏览器支持WebSocket");
+            console.log('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '","toClientType":"webClient"}');
+            socket.send('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '","toClientType":"webClient"}');
+
+            // window.location.reload("# refresh");
+            alert("消息已发送")
+        }
+    }
+
+    function sendInstruction() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            if (socket == null) {
+                alert("请开启socket");
+                return;
+            }
+
+            var send_data;
+
+            if ($("#action").val() == "1") {
+                send_data = JSON.stringify({
+                    "action": "set_power_switch",
+                    "params": {
+                        "device_id": parseInt($("#device_id").val()),
+                        "switch": parseInt($("#switch").val())
+                    },
+                    "echo": "123.456.789.0"
+                });
+            }
+            else if ($("#action").val() == "2") {
+                send_data = JSON.stringify({
+                    "action": "set_air_conditioner",
+                    "params": {
+                        "device_id": parseInt($("#device_id").val()),
+                        "mode": parseInt($("#mode").val()),
+                        "power": parseInt($("#power").val()),
+                        "basic_fan": parseInt($("#basic_fan").val()),
+                        "temp": parseInt($("#temp").val())
+                    },
+                    "echo": $("#echo").val()
+                });
+            }
+
+            //console.log(send_data);
+            socket.send(send_data);
+        }
+    }
+
+    function appendMessage(message) {
+        var context = $("#context").html() + "<br/>" + message;
+        $("#context").html(context);
+    }
+
+    layui.use(['form'], function () {
+        form = layui.form;
+        form.on('select(action)', function (data) {
+            var val = data.value;
+            var myDiv1 = document.getElementById("power_switch");
+            var myDiv2 = document.getElementById("air_conditioner");
+            myDiv1.style.display = (val == "1") ? "block" : "none";
+            myDiv2.style.display = (val == "2") ? "block" : "none";
+        });
+    });
+
+</script>
+
+</html>

@@ -1,0 +1,114 @@
+{
+  "id": "3779328",
+  "name": "dtlab",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "3542178",
+      "name": "左箭头",
+      "font_class": "zuojiantou",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "18444843",
+      "name": "down arrow",
+      "font_class": "downarrow",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "1309",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "20104510",
+      "name": "日志",
+      "font_class": "rizhi",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "821797",
+      "name": "通用-展开",
+      "font_class": "zhankai",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "827370",
+      "name": "通用-收起",
+      "font_class": "shouqi",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "145442",
+      "name": "用户",
+      "font_class": "yonghu",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "1302627",
+      "name": "model-lib",
+      "font_class": "model-lib",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "6607672",
+      "name": "ico_设备管理_设备信息维护",
+      "font_class": "ico_shebeiguanli_shebeixinxiweihu",
+      "unicode": "e8f9",
+      "unicode_decimal": 59641
+    },
+    {
+      "icon_id": "32662735",
+      "name": "全局放大2",
+      "font_class": "quanjufangda2",
+      "unicode": "e989",
+      "unicode_decimal": 59785
+    },
+    {
+      "icon_id": "8797986",
+      "name": "浏览",
+      "font_class": "liulan",
+      "unicode": "e7d0",
+      "unicode_decimal": 59344
+    },
+    {
+      "icon_id": "8821276",
+      "name": "人员-01",
+      "font_class": "renyuan-",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "10478951",
+      "name": "会议室",
+      "font_class": "huiyishi",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "25996947",
+      "name": "系统管理",
+      "font_class": "xitongguanli",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "26323709",
+      "name": "全局",
+      "font_class": "quanju",
+      "unicode": "e753",
+      "unicode_decimal": 59219
+    }
+  ]
+}

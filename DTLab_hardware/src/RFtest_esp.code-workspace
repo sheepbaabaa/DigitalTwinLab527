@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../RFtest_esp"
+		},
+		{
+			"name": "DT-Station",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

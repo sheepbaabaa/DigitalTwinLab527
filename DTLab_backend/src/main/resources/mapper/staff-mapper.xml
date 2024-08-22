@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mobinets.digitaltwinlab.dao.StaffMapper">
+
+    <sql id="insertFields">
+       member_id,campus_num, name_zh,name_en,type
+    </sql>
+
+    <sql id="selectFields">
+        member_id,campus_num, name_zh,name_en,person_state,type
+    </sql>
+
+    <select id="selectByCampusNum" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where campus_num = #{campusNum}
+    </select>
+
+    <select id="selectByName" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where name_zh = #{name}
+    </select>
+
+    <select id="selectByEnglishName" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where name_en =  #{name_en}
+    </select>
+
+    <select id="selectAllStaff" resultType="Staff">
+        select <include refid="selectFields"></include>
+        from staff
+        where type =  1
+    </select>
+
+    <insert id="insertStaff" parameterType="Staff" keyProperty="campusNum">
+        insert into staff (<include refid="insertFields"></include>)
+        values(#{member_id},#{campusNum}, #{name_zh}, #{name_en},#{type})
+    </insert>
+
+    <update id="updateType">
+        update staff set type = #{type} where campus_num = #{campusNum}
+    </update>
+
+    <update id="updatePersonState">
+        update staff set person_state = #{state} where member_id = #{member_id}
+    </update>
+
+</mapper>
