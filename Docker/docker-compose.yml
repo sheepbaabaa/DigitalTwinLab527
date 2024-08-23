@@ -43,3 +43,12 @@ services:
     volumes:
       - ./log:/data/log
       - ./file:/data/dtlab
+
+  dtlab_frontend:
+    build:
+      context: ../DTLab_frontend
+      dockerfile: Dockerfile
+    image: dtlab/dtlab_frontend:latest
+    container_name: dtlab_frontend
+    ports:
+      - "80:80"
