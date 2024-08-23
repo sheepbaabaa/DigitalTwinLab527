@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <contextName>dtlab</contextName>
-    <property name="LOG_PATH" value="/www/wwwroot/dtlab/log"/>
+    <property name="LOG_PATH" value="/data/log"/>
     <property name="APPDIR" value="dtlab"/>
-
     <!-- error file -->
     <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APPDIR}/log_error.log</file>

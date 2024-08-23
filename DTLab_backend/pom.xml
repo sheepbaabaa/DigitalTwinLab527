@@ -9,11 +9,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mobinets</groupId>
-    <artifactId>DigitalTwinLab</artifactId>
+    <artifactId>dtlab</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>DigitalTwinLab</name>
+    <name>dtlab</name>
     <description>mobinets DigitalTwinLab</description>
     <properties>
+        <spring-boot.build-image.imageName>dtlab/backend</spring-boot.build-image.imageName>
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -153,6 +154,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+                        <name>dtlab/backend</name>
+                    </image>
+                </configuration>
             </plugin>
         </plugins>
     </build>
