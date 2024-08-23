@@ -38,7 +38,7 @@ export default {
         this.$websocket.setUrl("wss://dtlab.qylh.xyz/dtlab/ws/webClient/" + userId)
       }
       else {
-        this.$websocket.setUrl("ws://" + this.$host + "/dtlab/ws/webClient/" + userId)
+        this.$websocket.setUrl("ws://" + this.$host + "/ws/dtlab/ws/webClient/" + userId)
       }
       this.$websocket.start()
     }
@@ -48,7 +48,6 @@ export default {
     }
   },
   mounted() {
-    
   },
   beforeDestroy() {
     //应用销毁前关闭连接

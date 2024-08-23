@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from "./store"
-import {HOST,MODEL_LOCATION} from "./env.js"
 // 引入依赖
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -14,8 +13,8 @@ import ActivityCalendar from "vue-activity-calendar";
 import "vue-activity-calendar/style.css"; 
 
 var app = createApp(App)
-app.config.globalProperties.$host = HOST
-app.config.globalProperties.$modelLocation = MODEL_LOCATION
+app.config.globalProperties.$host = process.env.VUE_APP_HOST 
+app.config.globalProperties.$modelLocation = process.env.VUE_APP_MODEL_LOCATION
 
 var websocket = new websockConnect()
 app.config.globalProperties.$websocket = websocket

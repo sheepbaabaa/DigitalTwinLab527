@@ -7,7 +7,7 @@ export default class websockConnect {
     url;
     LightChangeFun;
     LightChangeFun = function () { console.log("函数指针success") };
-    constructor(url = "ws://192.168.0.191:8080/dtlab/ws/webClient/") {
+    constructor(url = "ws://127.0.0.1:8080/dtlab/ws/webClient/") {
         this.url = url
     }
     setUrl(url) {

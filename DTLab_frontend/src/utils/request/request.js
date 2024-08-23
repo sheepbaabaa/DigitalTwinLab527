@@ -1,13 +1,12 @@
 import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus'
-import {HOST} from '@/env.js'
 import _ from 'lodash';
 var baseURL = '';
-if (HOST == "dtlab.qylh.xyz:9003") {
+if (process.env.VUE_APP_HOST == "dtlab.qylh.xyz:9003") {
     baseURL = 'https://dtlab.qylh.xyz/dtlab'
 }
 else {
-    baseURL = 'http://' + HOST + '/dtlab'
+    baseURL = 'http://' + process.env.VUE_APP_HOST + '/dtlab'
 }
 const service = axios.create({
     baseURL: baseURL,

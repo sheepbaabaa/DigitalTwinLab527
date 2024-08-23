@@ -32,8 +32,6 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js'
 import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer"
-import axios from 'axios'
-import HOST from '@/env.js'
 import { ElMessage, linkProps } from 'element-plus';
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';

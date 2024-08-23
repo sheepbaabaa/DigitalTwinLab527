@@ -55,7 +55,6 @@ import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import axios from 'axios'
-import {HOST} from '@/env.js'
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 var scene;
@@ -365,11 +364,11 @@ export default {
                         var formData = new FormData()
                         formData.append('modelFile', blob);
                         var url = null
-                        if (HOST == "dtlab.qylh.xyz:9003") {
+                        if (process.env.VUE_APP_HOST == "dtlab.qylh.xyz:9003") {
                             url = "https://dtlab.qylh.xyz/dtlab/model/uploadModelFile"
                         }
                         else {
-                            url = 'http://' + HOST + '/dtlab/model/uploadModelFile'
+                            url = 'http://' + process.env.VUE_APP_HOST  + '/dtlab/model/uploadModelFile'
                         }
                         axios({
                             method: 'post',
@@ -443,11 +442,11 @@ export default {
                         var formData = new FormData()
                         formData.append('modelFile', blob);
                         var url = null
-                        if (HOST == "dtlab.qylh.xyz:9003") {
+                        if (process.env.VUE_APP_HOST == "dtlab.qylh.xyz:9003") {
                             url = "https://dtlab.qylh.xyz/dtlab/model/uploadModelFile"
                         }
                         else {
-                            url = 'http://' + HOST + '/dtlab/model/uploadModelFile'
+                            url = 'http://' + process.env.VUE_APP_HOST + '/dtlab/model/uploadModelFile'
                         }
                         axios({
                             method: 'post',

@@ -58,7 +58,7 @@ var controls;
 var peopleLabelRenderer; //人物label渲染器
 
 var progress=0;
-const velocity = 0.003;
+const velocity = 0.005;
 
 export default {
     name: 'SceneCanvas',
@@ -198,45 +198,10 @@ export default {
         },
         moveOnCurve() {
             var curve = new THREE.CatmullRomCurve3([
-                new THREE.Vector3(-5, 0, 3),
-                new THREE.Vector3(-4.7, 0, 2),
-                new THREE.Vector3(-4.7, 0, 0),
-                new THREE.Vector3(-4, 0, -1),
-                new THREE.Vector3(-4.9, 0, -2),
-                new THREE.Vector3(-4, 0, -3),
-                new THREE.Vector3(-4.5, 0, -2),
-                new THREE.Vector3(-3.8, 0, -3),
-                new THREE.Vector3(-3.8, 0, -2),
-                new THREE.Vector3(-3, 0, -1.2),
-                new THREE.Vector3(-3.2, 0, 0),
-                new THREE.Vector3(-3.3, 0, 0.8),
-                new THREE.Vector3(-3.3, 0, 1.7),
-                new THREE.Vector3(-2, 0, 1.1),
-                new THREE.Vector3(-1.3, 0, 1.5),
-                new THREE.Vector3(0, 0, 1.3),
-                new THREE.Vector3(1.5, 0, 0),
-                new THREE.Vector3(1.7, 0, -0.8),
-                new THREE.Vector3(1.5, 0, -1.9),
-                new THREE.Vector3(1.4, 0, -2.1),
-                new THREE.Vector3(1.3, 0, -2.6),
-                new THREE.Vector3(1.4, 0, -2.1),
-                new THREE.Vector3(1.3, 0, -2.6),
-                new THREE.Vector3(1.5, 0, -1.7),
-                new THREE.Vector3(1, 0, -1),
-                new THREE.Vector3(1.3, 0, 1.3),
-                new THREE.Vector3(1.6, 0, 2.3),
-                new THREE.Vector3(0, 0, 3),
-                new THREE.Vector3(-1, 0, 3.1),
-                new THREE.Vector3(-2.7, 0, 3.2),
-                new THREE.Vector3(-3, 0, 3.5),
-                new THREE.Vector3(-5, 0, 3),
-
-
-
-                // new THREE.Vector3(0, 0, 0),
-                // new THREE.Vector3(3, 0, 0),
-                // new THREE.Vector3(3, 0, 3),
-                // new THREE.Vector3(0, 0, 3)
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(3, 0, 0),
+            new THREE.Vector3(3, 0, 3),
+            new THREE.Vector3(0, 0, 3)
             ]);
             curve.curveType = "catmullrom";
             curve.closed = true;//设置是否闭环
@@ -263,9 +228,9 @@ export default {
                 var toRot = new THREE.Quaternion().setFromRotationMatrix(mtx)  //计算出需要进行旋转的四元数值
                 this.testPeople.quaternion.slerp(toRot, 0.2)
             }
-                progress += velocity;
+            progress += velocity;
             } else {
-                progress = 0;
+            progress = 0;
             }
 		},
         animate() {

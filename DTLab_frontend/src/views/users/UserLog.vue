@@ -72,7 +72,7 @@ export default {
               this.$websocket.setUrl("wss://dtlab.qylh.xyz/dtlab/ws/webClient/" + res.data.userInfo.id)
             }
             else {
-              this.$websocket.setUrl("ws://" + this.$host + "/dtlab/ws/webClient/"+ res.data.userInfo.id)
+              this.$websocket.setUrl("ws://" + this.$host + "/ws/dtlab/ws/webClient/"+ res.data.userInfo.id)
             }
             this.$websocket.start()
             this.$router.push('GlobalView')
@@ -102,7 +102,7 @@ export default {
           this.$websocket.setUrl("wss://dtlab.qylh.xyz/dtlab/ws/webClient/" + "visitor")
         }
         else {
-          this.$websocket.setUrl("ws://" + this.$host + "/dtlab/ws/webClient/" + "visitor")
+          this.$websocket.setUrl("ws://" + this.$host + "/ws/dtlab/ws/webClient/" + "visitor")
         }
         this.$websocket.start()
     }
