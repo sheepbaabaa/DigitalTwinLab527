@@ -1,0 +1,255 @@
+/*
+    Esp32 Websockets Client
+
+    This sketch:
+        1. Connects to a WiFi network
+        2. Connects to a Websockets server
+        3. Sends the websockets server a message ("Hello Server")
+        4. Prints all incoming messages while the connection is open
+
+    Hardware:
+        For this sketch you only need an ESP32 board.
+
+    Created 15/02/2019
+    By Gil Maimon
+    https://github.com/gilmaimon/ArduinoWebsockets
+
+*/
+
+#include <Arduino.h>
+#include <ArduinoJson.h>
+
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+
+#include <WebSocketsClient.h>
+
+#include <IRremoteESP8266.h>
+#include <IRsend.h>
+#include <ir_Kelvinator.h>
+
+#define TEST_LED_PIN 33
+#define TEST_BUTTON_PIN 0
+
+#define USE_SERIAL Serial
+
+/// Constants
+// Wifi
+const char *ssid = "612";            // Enter SSID
+const char *password = "wififor612"; // Enter Password
+// Websockets
+const char *websockets_server_host = "192.168.0.198";             // Enter server adress
+uint16_t websockets_server_port = 8080;                           // Enter server port
+const char *websockets_server_url = "/ws/gatewayClient/gateway1"; // Enter server url
+// IR
+const uint16_t kIrLed_1 = 27;
+const uint16_t kIrLed_2 = 32;
+
+/// Variables
+// Websockets
+unsigned long messageInterval = 5000;
+bool connected = false;
+// Status
+uint8_t led = 0;
+
+/// Objects
+WebSocketsClient webSocket;
+IRKelvinatorAC ac1(kIrLed_1);
+IRKelvinatorAC ac2(kIrLed_2);
+StaticJsonDocument<200> doc;
+
+void recv_handle(char *data)
+{
+    DynamicJsonDocument doc(1024);
+    String input = String(data);
+    deserializeJson(doc, input);
+    JsonObject obj = doc.as<JsonObject>();
+    String instructionID = obj["instructionID"];
+    String deviceType = obj["deviceType"];
+    String deviceId = obj["deviceId"];
+    String instruction = obj["instruction"];
+
+    USE_SERIAL.print("instructionID: ");
+    USE_SERIAL.println(instructionID);
+    USE_SERIAL.print("deviceType: ");
+    USE_SERIAL.println(deviceType);
+    USE_SERIAL.print("deviceId: ");
+    USE_SERIAL.println(deviceId);
+    USE_SERIAL.print("instruction: ");
+    USE_SERIAL.println(instruction);
+
+    bool valid = true;
+
+    if (deviceType == "1")
+    {
+        if (deviceId == "1")
+        {
+            if (instruction == "1")
+            {
+                led = 1;
+            }
+            else if (instruction == "0")
+            {
+                led = 0;
+            }
+            else
+            {
+                valid = false;
+            }
+
+            if (valid)
+            {
+                digitalWrite(TEST_LED_PIN, led);
+                if (connected)
+                {
+                    String resp = "{\"instructionID\":\"" + instructionID + "\",\"xResult\":\"1\",\"message\":\"OK\"}";
+                    String str = "{\"device\":[{\"deviceType\":\"1\",\"deviceID\":\"1\",\"deviceStatus\":\"" + String(led) + "\"}]}";
+                    webSocket.sendTXT(resp);
+                    webSocket.sendTXT(str);
+                }
+            }
+            else
+            {
+                if (connected)
+                {
+                    String resp = "{\"instructionID\":\"" + instructionID + "\",\"xResult\":\"0\",\"message\":\"Illegal data format\"}";
+                    webSocket.sendTXT(resp);
+                }
+            }
+        }
+    }
+}
+
+void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
+{
+    const uint8_t *src = (const uint8_t *)mem;
+    USE_SERIAL.printf("\n[HEXDUMP] Address: 0x%08X len: 0x%X (%d)", (ptrdiff_t)src, len, len);
+    for (uint32_t i = 0; i < len; i++)
+    {
+        if (i % cols == 0)
+        {
+            USE_SERIAL.printf("\n[0x%08X] 0x%08X: ", (ptrdiff_t)src, i);
+        }
+        USE_SERIAL.printf("%02X ", *src);
+        src++;
+    }
+    USE_SERIAL.printf("\n");
+}
+
+void webSocketEvent(WStype_t type, uint8_t *payload, size_t length)
+{
+
+    switch (type)
+    {
+    case WStype_DISCONNECTED:
+        USE_SERIAL.printf("[WSc] Disconnected!\n");
+        connected = false;
+        break;
+    case WStype_CONNECTED:
+        USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
+
+        // send message to server when Connected
+        webSocket.sendTXT("Connected");
+        connected = true;
+        break;
+    case WStype_TEXT:
+        USE_SERIAL.printf("[WSc] get text: %s\n", payload);
+        recv_handle((char *)payload);
+        // send message to server
+        // webSocket.sendTXT("message here");
+        break;
+    case WStype_BIN:
+        USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
+        hexdump(payload, length);
+
+        // send data to server
+        // webSocket.sendBIN(payload, length);
+        break;
+    case WStype_ERROR:
+    case WStype_FRAGMENT_TEXT_START:
+    case WStype_FRAGMENT_BIN_START:
+    case WStype_FRAGMENT:
+    case WStype_FRAGMENT_FIN:
+        break;
+    }
+}
+
+void setup()
+{
+    // USE_SERIAL.begin(921600);
+    USE_SERIAL.begin(115200);
+
+    // Serial.setDebugOutput(true);
+    USE_SERIAL.setDebugOutput(true);
+
+    USE_SERIAL.println();
+    USE_SERIAL.println();
+    USE_SERIAL.println();
+
+    for (uint8_t t = 4; t > 0; t--)
+    {
+        USE_SERIAL.printf("[SETUP] BOOT WAIT %d...\n", t);
+        USE_SERIAL.flush();
+        delay(1000);
+    }
+
+    WiFi.begin(ssid, password);
+
+    // WiFi.disconnect();
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(100);
+    }
+
+    // server address, port and URL
+    webSocket.begin(websockets_server_host, websockets_server_port, websockets_server_url);
+
+    // event handler
+    webSocket.onEvent(webSocketEvent);
+
+    // use HTTP Basic Authorization this is optional remove if not needed
+    // webSocket.setAuthorization("admin", "022c74f");
+
+    // try ever 5000 again if connection has failed
+    webSocket.setReconnectInterval(5000);
+
+    pinMode(TEST_LED_PIN, OUTPUT);
+    pinMode(TEST_BUTTON_PIN, INPUT_PULLUP);
+
+    // IR
+    ac1.begin();
+    ac2.begin();
+}
+
+unsigned long lastUpdate = millis();
+
+void loop()
+{
+    webSocket.loop();
+    if (connected && lastUpdate + messageInterval < millis())
+    {
+        String str = "{\"device\":\"1\"}";
+        USE_SERIAL.println(str);
+        webSocket.sendTXT(str);
+        lastUpdate = millis();
+    }
+    if (!digitalRead(TEST_BUTTON_PIN))
+    {
+        delay(10);
+        if (!digitalRead(TEST_BUTTON_PIN))
+        {
+            USE_SERIAL.println("[Brd] button pressed");
+            led = !digitalRead(TEST_LED_PIN);
+            digitalWrite(TEST_LED_PIN, led);
+            if (connected)
+            {
+                String str = "{\"device\":[{\"deviceType\":\"1\",\"deviceID\":\"1\",\"deviceStatus\":\"" + String(led) + "\"}]}";
+                USE_SERIAL.println(str);
+                webSocket.sendTXT(str);
+            }
+            while (!digitalRead(TEST_BUTTON_PIN))
+            {
+            }
+        }
+    }
+}
