@@ -1,8 +1,11 @@
+import time
+
 import face_recognition
 import cv2
 import numpy as np
 
 from data_utils import load_data
+from mqtt_client import MqttClient
 
 video_capture = cv2.VideoCapture(0)
 
@@ -14,7 +17,7 @@ face_locations = []
 face_encodings = []
 face_names = []
 process_this_frame = True
-
+mqtt_client = MqttClient("face_recognizer", "127.0.0.1", 1883, "dtlab", "527")
 while True:
     ret, frame = video_capture.read()
     if process_this_frame:
@@ -31,6 +34,7 @@ while True:
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = names[best_match_index]
+                mqtt_client.publish("face_recognize_result", {"name":name, "time":time.time(), "distance":face_distances[best_match_index]})
             face_names.append(name)
     process_this_frame = not process_this_frame
     for (top, right, bottom, left), name in zip(face_locations, face_names):
