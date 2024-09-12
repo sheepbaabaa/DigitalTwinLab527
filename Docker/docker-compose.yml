@@ -41,6 +41,10 @@ services:
     environment:
       - MYSQL_HOST=dtlab_mysql
       - REDIS_HOST=dtlab_redis
+      - MQTT_URL=tcp://127.0.0.1:1883
+      - MQTT_USERNAME=backend
+      - MQTT_PASSWORD=backend
+      - MQTT_CLIENT_ID=backend
     ports:
       - "8080:8080"
     volumes:
@@ -66,3 +70,4 @@ services:
       - "18083:18083"
     volumes:
       - ./emqx/data:/opt/emqx/data
+      - ./emqx/log:/opt/emqx/log

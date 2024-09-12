@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 public class DigitalTwinLabApplication {
 
     public static void main(String[] args) {
-
         SpringApplication.run(DigitalTwinLabApplication.class, args);
     }
 
