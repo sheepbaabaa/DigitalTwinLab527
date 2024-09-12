@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>websocket通讯</title>
+</head>
+<body>
+    <div id="currentUserId">
+    [currentUserId]：
+    <input id="userId" name="userId" type="text" value="10"/>
+    <button onclick="openSocket()"> 开启socket</button>
+    <button onclick="closeSocket()"> 关闭socket</button>
+    </div>
+    <br/>
+    <div id="toUsersId">
+    [toUserId]：
+    <input id="toUserId" name="toUserId" type="text" value="20"/>
+    [content]：
+    <input id="contentText" name="contentText" type="text" value="hello websocket"/>
+    <button onclick="sendMessage()">发送消息</button>
+    </div>
+    <br/>
+    <div id="toGateway">
+        [deviceType]:
+        <input id = "deviceType" name="deviceType" type="text" value="1"/>
+        [deviceID]:
+        <input id = "deviceID" name="deviceID" type="text" value="666888"/>
+        [instruction]:
+        <input id = "instruction" name="instruction" type="text" value="open the door"/>
+        <button onclick="sendInstruction()">发送指令</button>
+    </div>
+    <br/>
+    <div id="context">
+        message:
+    </div>
+</body>
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.min.js"></script>
+<!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>-->
+
+
+<script>
+    var socket;
+
+    function openSocket() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            console.log("您的浏览器支持WebSocket");
+
+
+            // 实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+            const socketUrl = "ws://localhost:8080/dtlab/ws/webClient/" + $("#userId").val();
+            console.log(socketUrl);
+            if (socket != null) {
+                // socket.close();
+                // socket = null;
+                alert("socket已开启，请勿重复开启")
+            } else{
+                socket = new WebSocket(socketUrl);
+            }
+
+            //打开事件
+            socket.onopen = function () {
+                alert("websocket已打开");
+                jsonTest();
+                // socket.send("这是来自客户端: " + location.href +"的消息   " + new Date());
+            };
+            //获得消息事件
+            socket.onmessage = function (msg) {
+                console.log("接收到信息：" + msg.data);
+                appendMessage("接收到信息：" + msg.data);
+                // alert("接收信息：" + msg.data);
+                // document.writeln("接收信息：" + msg.data);
+
+            };
+            //关闭事件
+            socket.onclose = function () {
+                socket.close();
+                socket = null;
+                appendMessage("WebSocket服务器已关闭")
+
+                // alert("websocket已关闭");
+            };
+            //发生了错误事件
+            socket.onerror = function () {
+                alert("websocket发生了错误")
+            }
+        }
+    }
+
+    function closeSocket() {
+        if (socket != null) {
+            socket.close();
+            socket = null;
+            appendMessage("已关闭WebSocket")
+            // alert("Websocket已关闭")
+        }else {
+            alert("Websocket未开启，请开启")
+        }
+    }
+
+    function sendMessage() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            if (socket == null) {
+                alert("请开启socket");
+                return;
+            }
+            console.log("您的浏览器支持WebSocket");
+            console.log('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '","toClientType":"webClient"}');
+            socket.send('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '","toClientType":"webClient"}');
+
+            // window.location.reload("# refresh");
+            alert("消息已发送")
+        }
+    }
+
+    function sendInstruction() {
+        if (typeof (WebSocket) == "undefined") {
+            alert("您的浏览器不支持WebSocket");
+        } else {
+            if (socket == null) {
+                alert("请开启socket");
+                return;
+            }
+            socket.send('{"instruction":"' + $("#instruction").val() +
+                '","instructionID":"10.666888.1661858077000' +
+                '","deviceType":"' + $("#deviceType").val() +
+                '","deviceID":"' + $("#deviceID").val() +
+                '","toClientType":"gatewayClient"}');
+    }
+    }
+    function appendMessage(message) {
+        var context = $("#context").html() + "<br/>" + message;
+        $("#context").html(context);
+    }
+    function jsonTest(){
+        var text = {
+            "loginStatusCode":"1",
+            "anotherCode":"1"
+        };
+        // obj = JSON.parse(text);
+        // appendMessage((obj.loginStatusCode));
+        appendMessage(text.loginStatusCode);
+
+    }
+
+</script>
+</html>
+
+
