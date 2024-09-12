@@ -1,3 +1,5 @@
 *.pkl
 !.gitignore
 .idea
+*.pyc
+*/__pycache__/
