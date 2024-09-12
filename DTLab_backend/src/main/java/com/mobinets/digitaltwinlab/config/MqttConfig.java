@@ -3,6 +3,9 @@ package com.mobinets.digitaltwinlab.config;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.IntegrationComponentScan;
+import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
@@ -12,7 +15,13 @@ import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
+
+@Configuration
+@IntegrationComponentScan
 public class MqttConfig {
     @Value("${mqtt.broker.url}")
     private String brokerUrl;
@@ -45,6 +54,8 @@ public class MqttConfig {
         options.setServerURIs(new String[]{brokerUrl});
         options.setUserName(username);
         options.setPassword(password.toCharArray());
+        options.setCleanSession(false);
+        options.setAutomaticReconnect(true);
         options.setConnectionTimeout(connectionTimeout);
         options.setKeepAliveInterval(keepAliveInterval);
         factory.setConnectionOptions(options);
@@ -81,6 +92,14 @@ public class MqttConfig {
         adapter.setQos(qos);
         adapter.setOutputChannel(mqttInputChannel());
         return adapter;
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "mqttInputChannel")
+    public MessageHandler handler(){
+        return message -> {
+            System.out.println("Received message: " + message.getPayload());
+        };
     }
 
 }
