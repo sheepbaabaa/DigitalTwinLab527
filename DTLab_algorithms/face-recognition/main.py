@@ -27,7 +27,7 @@ while True:
     face_encodings = face_recognition.face_encodings(new, face_locations)
     face_names = []
     for face_encoding in face_encodings:
-        matches = face_recognition.compare_faces(faces, face_encoding, )qq
+        matches = face_recognition.compare_faces(faces, face_encoding, )
         name = "Unknown"
         face_distances = face_recognition.face_distance(faces, face_encoding)
         best_match_index = np.argmin(face_distances)
