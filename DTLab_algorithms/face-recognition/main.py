@@ -17,7 +17,7 @@ face_locations = []
 face_encodings = []
 face_names = []
 
-mqtt_client = MqttClient("face_recognizer", "127.0.0.1", 1883, "dtlab", "527")
+mqtt_client = MqttClient("face_recognizer", "127.0.0.1", 1883, "camera_1", "camera_1")
 while True:
     ret, frame = video_capture.read()
     small_frame = cv2.resize(frame, (0, 0), fx=1, fy=1)
