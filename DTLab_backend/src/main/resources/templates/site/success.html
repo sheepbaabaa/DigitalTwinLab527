@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm register</title>
+    <!-- Custom styles-path -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <!-- Font Awesome kit script -->
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+
+    <!-- Google Fonts Open Sans-->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/img/html-5.png}">
+</head>
+
+<body>
+    <img class="wave" th:src="@{/img/wave.svg}">
+    <div class="container">
+        <div class="img">
+            <img th:src="@{/img/computer_display.svg}">
+        </div>
+        <div class="confirm-container">
+            <div class="content">
+                <h2 th:text="${msg}">Register Success!</h2>
+                <i class="far fa-check-circle"></i>
+                <div class="btn-container">
+                    <a th:href="@{${target}}" class="btn-action">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

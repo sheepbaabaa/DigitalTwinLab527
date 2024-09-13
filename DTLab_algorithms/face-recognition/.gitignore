@@ -1,0 +1,6 @@
+*.pkl
+!.gitignore
+.idea
+*.pyc
+*/__pycache__/
+config.ini

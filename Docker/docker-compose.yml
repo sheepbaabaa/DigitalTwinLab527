@@ -1,0 +1,73 @@
+version: '3.0'
+
+services:
+  dtlab_mysql:
+    image: mysql:8.0.28
+    container_name: dtlab_mysql
+    platform: "linux/x86_64"
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=dtlab
+      - MYSQL_DATABASE=dtlab
+      - MYSQL_USER=dtlab
+      - MYSQL_PASSWORD=dtlab
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=dtlab --execute \"SHOW DATABASES;\""
+      timeout: 20s
+      interval: 2s
+      retries: 10
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ../DTLab_database/dtlab.sql:/docker-entrypoint-initdb.d/dtlab.sql:ro
+    command: --authentication_policy=mysql_native_password
+
+  dtlab_redis:
+    image: redislabs/rejson:2.8.3
+    container_name: dtlab_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data  # 挂载宿主机的data目录到容器的/data目录，用于存储rdb文件
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf  # 自定义 Redis 配置文件
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]  # 使用自定义配置文件启动 Redis
+
+  dtlab_backend:
+    image: dtlab/backend:latest
+    container_name: dtlab_backend
+    restart: always
+    environment:
+      - MYSQL_HOST=dtlab_mysql
+      - REDIS_HOST=dtlab_redis
+      - MQTT_URL=tcp://127.0.0.1:1883
+      - MQTT_USERNAME=backend
+      - MQTT_PASSWORD=backend
+      - MQTT_CLIENT_ID=backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./log:/data/log
+      - ./file:/data/dtlab
+
+  dtlab_frontend:
+    build:
+      context: ../DTLab_frontend
+      dockerfile: Dockerfile
+    image: dtlab/dtlab_frontend:latest
+    restart: always
+    container_name: dtlab_frontend
+    ports:
+      - "80:80"
+
+  dtlab_emqx:
+    image: emqx/emqx:5.8.0
+    container_name: dtlab_emqx
+    restart: always
+    ports:
+      - "1883:1883"
+      - "18083:18083"
+    volumes:
+      - ./emqx/data:/opt/emqx/data
+      - ./emqx/log:/opt/emqx/log
