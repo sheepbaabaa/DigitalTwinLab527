@@ -1,4 +1,4 @@
-from camNativeLib.LPNET_DVR_DEVICEINFO_V30 import *
+from hikvision.camNativeLib.LPNET_DVR_DEVICEINFO_V30 import *
 
 class NET_DVR_DEVICEINFO_V40(ctypes.Structure):
     _fields_=[

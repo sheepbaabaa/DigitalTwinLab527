@@ -4,19 +4,20 @@ import subprocess
 import cv2
 import numpy as np
 
-from camNativeLib.NET_DVR_USER_LOGIN_INFO import *
-from camNativeLib.NET_DVR_DEVICEINFO_V40 import *
-from camNativeLib.NET_DVR_PTZPOS import *
-from camNativeLib.NET_DVR_PREVIEWINFO import *
-from camNativeLib.camEnum import *
-import camNativeLib.camPTZ
-
-nativeSdkPath=os.getcwd()+"/hikvision"
+from hikvision.camNativeLib.NET_DVR_USER_LOGIN_INFO import *
+from hikvision.camNativeLib.NET_DVR_DEVICEINFO_V40 import *
+from hikvision.camNativeLib.NET_DVR_PTZPOS import *
+from hikvision.camNativeLib.camEnum import *
+from hikvision.camNativeLib.camPTZ import *
+import hikvision.camNativeLib.camPTZ
 
 class HKSdkApi:
-    def __init__(self):
-        self.path = nativeSdkPath
-        strPath = os.getcwd().encode('utf-8') + b'/hikvision/libhcnetsdk.so'
+    def __init__(self,ip , username, password, sdk_path):
+        self.ip = ip
+        self.path = sdk_path
+        self.username = username
+        self.password = password
+        strPath = sdk_path.encode("utf-8") + b'/libhcnetsdk.so'
         self.Objdll = ctypes.CDLL(strPath)
         self.dll_list = []
         # 缓冲数据用
@@ -27,8 +28,6 @@ class HKSdkApi:
         #登陆用户信息
         self.dvrLoginInfo=None
         self.userid=None
-        pass
-
 
 
 # 遍历动态链接库目录
@@ -48,8 +47,8 @@ class HKSdkApi:
                 lib = ctypes.cdll.LoadLibrary(so_lib)
                 try:
                     value = eval("lib.%s" % func_name)(*args)
-                    print("调用的库：" + so_lib)
-                    print("执行成功,返回值：" + str(value))
+                    # print("调用的库：" + so_lib)
+                    # print("执行成功,返回值：" + str(value))
                     return value
                 except:
                     continue
@@ -60,58 +59,59 @@ class HKSdkApi:
         return False
 
     #摄像头用户登陆
-    def NET_DVR_Login_V40(self,sDVRIP="192.168.3.122",wDVRPort=8000,sUserName="admin",sPassword="wififor612"):
+    def NET_DVR_Login_V40(self, wDVRPort=8000):
         # set_overtime = self.Objdll.NET_DVR_SetConnectTime(5000, 4)
         set_overtime = self.callCpp("NET_DVR_SetConnectTime", 5000, 4)  # 设置超时
         if set_overtime:
-            logging.info(sDVRIP + ", 设置超时时间成功")
+            logging.info(self.ip + ", 设置超时时间成功")
         else:
             error_info = self.callCpp("NET_DVR_GetLastError")
-            logging.error(sDVRIP + ", 设置超时错误信息：" + str(error_info))
+            logging.error(self.ip + ", 设置超时错误信息：" + str(error_info))
             return False
 
         self.dvrLoginInfo= NET_DVR_USER_LOGIN_INFO()
         # c++传递进去的是byte型数据，需要转成byte型传进去，否则会乱码
-        self.dvrLoginInfo.sDeviceAddress = (ctypes.c_byte * 129)(*[ctypes.c_byte(ord(c)) for c in sDVRIP])
-        self.dvrLoginInfo.sUserName = (ctypes.c_byte * 64)(*[ctypes.c_byte(ord(c)) for c in sUserName])
-        self.dvrLoginInfo.sPassword = (ctypes.c_byte * 64)(*[ctypes.c_byte(ord(c)) for c in sPassword])
+        self.dvrLoginInfo.sDeviceAddress = (ctypes.c_byte * 129)(*[ctypes.c_byte(ord(c)) for c in self.ip])
+        self.dvrLoginInfo.sUserName = (ctypes.c_byte * 64)(*[ctypes.c_byte(ord(c)) for c in self.username])
+        self.dvrLoginInfo.sPassword = (ctypes.c_byte * 64)(*[ctypes.c_byte(ord(c)) for c in self.password])
         self.dvrLoginInfo.wPort = wDVRPort
         self.dvrLoginInfo.bUseAsynLogin=0
         self.dvrDeviceInfo=NET_DVR_DEVICEINFO_V40()
         dvrUserLoginRef=ctypes.byref(self.dvrLoginInfo)
         dvrDeviceInfoRef=ctypes.byref(self.dvrDeviceInfo)
         lUserID = self.callCpp("NET_DVR_Login_V40", dvrUserLoginRef,dvrDeviceInfoRef)
-        print(sDVRIP + ", 登录结果：" + str(lUserID))
-        print(self.dvrDeviceInfo.byPasswordLevel)
+        # print(self.ip + ", 登录结果：" + str(lUserID))
+        # print(self.dvrDeviceInfo.byPasswordLevel)
         # dvrDeviceInfoRef.struDeviceV30.byStartChan
         if lUserID == -1:  # -1表示失败，其他值表示返回的用户ID值。
             error_info = self.callCpp("NET_DVR_GetLastError")
-            print(sDVRIP + ", 登录错误信息：" + str(error_info))
+            print(self.ip + ", 登录错误信息：" + str(error_info))
+        print("登录成功")
         return lUserID
 
-    def NET_DVR_Login_V30(self,sDVRIP="192.168.3.122",wDVRPort=8000,sUserName="admin",sPassword="wififor612"):
+    def NET_DVR_Login_V30(self, wDVRPort=8000):
         # set_overtime = self.callCpp("NET_DVR_SetConnectTime", 5000, 4)  # 设置超时
         set_overtime = self.Objdll.NET_DVR_SetConnectTime(5000, 4)
         if set_overtime:
-            logging.info(sDVRIP + ", 设置超时时间成功")
+            logging.info(self.ip + ", 设置超时时间成功")
         else:
             error_info = self.callCpp("NET_DVR_GetLastError")
-            logging.error(sDVRIP + ", 设置超时错误信息：" + str(error_info))
+            logging.error(self.ip + ", 设置超时错误信息：" + str(error_info))
             return False
 
         # c++传递进去的是byte型数据，需要转成byte型传进去，否则会乱码
-        sDVRIP_bytes = bytes(sDVRIP, "ascii")
-        sUserName = bytes(sUserName, "ascii")
-        sPassword = bytes(sPassword, "ascii")
+        sDVRIP_bytes = bytes(self.ip, "ascii")
+        sUserName = bytes(self.username, "ascii")
+        sPassword = bytes(self.password, "ascii")
         DeviceInfo = LPNET_DVR_DEVICEINFO_V30()
         DeviceInfoRef = ctypes.byref(DeviceInfo)
         # lUserID = self.callCpp("NET_DVR_Login_V30", sDVRIP_bytes, wDVRPort, sUserName, sPassword, DeviceInfoRef)
         lUserID = self.Objdll.NET_DVR_Login_V30(sDVRIP_bytes, wDVRPort, sUserName, sPassword,
                                       ctypes.byref(DeviceInfo))
-        logging.info(sDVRIP + ", 登录结果：" + str(lUserID))
+        logging.info(self.ip + ", 登录结果：" + str(lUserID))
         if lUserID == -1:  # -1表示失败，其他值表示返回的用户ID值。
             error_info = self.callCpp("NET_DVR_GetLastError")
-            logging.error(sDVRIP + ", 登录错误信息：" + str(error_info))
+            logging.error(self.ip + ", 登录错误信息：" + str(error_info))
         self.userid=lUserID
         return lUserID
     
@@ -125,7 +125,6 @@ class HKSdkApi:
 
     def NET_DVR_GetDVRConfig(self,lUserID,dwCommand,IChannel,IpOutBuffer,IpBytesReturned):       
         IpOutBufferRef=ctypes.byref(IpOutBuffer)
-        print(ctypes.sizeof(IpOutBuffer))
         buffSize=ctypes.sizeof(IpOutBuffer)
         IpBytesReturnedRef=ctypes.byref(IpBytesReturned)
         res=self.callCpp("NET_DVR_GetDVRConfig",lUserID,dwCommand,IChannel,IpOutBufferRef,buffSize,IpBytesReturnedRef)
@@ -142,7 +141,6 @@ class HKSdkApi:
 
     def hex2dec(self,decValue):
         res=int('0x'+str(decValue),16)
-        print(res)
         return res
 
     def control(self,ptzCommand,ptzTrigger,speed):
@@ -164,7 +162,7 @@ class HKSdkApi:
            return res
         # print(self.dvrDeviceInfo.struDeviceV30.byStartChan)
         # print(ptzpos.wPanPos)
-        ptz=camNativeLib.camPTZ.CamPTZ()
+        ptz=CamPTZ()
         ptz.action=self.dex2hex(ptzpos.wAction)
         ptz.pan=self.dex2hex(ptzpos.wPanPos)
         ptz.tilt=self.dex2hex(ptzpos.wTiltPos)
@@ -181,9 +179,7 @@ class HKSdkApi:
 
     def NET_DVR_Init(self):
         res=self.callCpp("NET_DVR_Init")
-        if res:
-            print(res)
-        else:
+        if not res:
             print("Fail"+str(self.callCpp("NET_DVR_GetLastError")))
         return res
 

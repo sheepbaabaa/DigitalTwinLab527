@@ -4,4 +4,6 @@ class CamPTZ:
         self.pan=None
         self.tilt=None
         self.zoom=None
-        pass    
+
+    def __str__(self) -> str:
+        return f"action:{self.action}, pan:{self.pan}, tilt:{self.tilt}, zoom:{self.zoom}"
