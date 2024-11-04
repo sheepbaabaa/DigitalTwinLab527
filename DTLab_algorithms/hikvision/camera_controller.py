@@ -21,7 +21,6 @@ class CameraController:
         self.camera_sdk.NET_DVR_Init()
         self.camera_sdk.NET_DVR_Login_V40()
         self.cap = cv2.VideoCapture(f'rtsp://{self.username}:{self.password}@{self.camera_ip}/Streaming/Channels/101?tcp')
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     def get_frame(self):
         return self.cap.read()[1]
