@@ -135,16 +135,12 @@ class HKSdkApi:
 
     #计算16进制值转10进制值
     def dex2hex(self,hexValue):
-        res=hex(hexValue)
-        res=int(str(res).replace('0x',''))
-        return res
+        return int(hex(hexValue)[2:].upper()) // 10
 
     def hex2dec(self,decValue):
-        res=int('0x'+str(decValue),16)
-        return res
+        return int(str(decValue * 10), 16)
 
     def control(self,ptzCommand,ptzTrigger,speed):
-        res=None
         res=self.callCpp("NET_DVR_PTZControlWithSpeed_Other",self.userid,self.dvrDeviceInfo.struDeviceV30.byStartChan,ptzCommand,ptzTrigger,speed)
         if res == -1:  # -1表示失败
            error_info = self.callCpp("NET_DVR_GetLastError")
@@ -161,6 +157,7 @@ class HKSdkApi:
            logging.error("获取PTZ错误信息：" + str(error_info))
            return res
         # print(self.dvrDeviceInfo.struDeviceV30.byStartChan)
+        # print(ptzpos.wPanPos)
         # print(ptzpos.wPanPos)
         ptz=CamPTZ()
         ptz.action=self.dex2hex(ptzpos.wAction)
@@ -185,4 +182,14 @@ class HKSdkApi:
 
 
 
-
+    def setPTZ(self,ptz):
+        ptzpos = NET_DVR_PTZPOS()
+        ptzpos.wAction=1
+        ptzpos.wPanPos=self.hex2dec(ptz.pan)
+        ptzpos.wTiltPos=self.hex2dec(ptz.tilt)
+        ptzpos.wZoomPos=self.hex2dec(ptz.zoom)
+        res=self.callCpp("NET_DVR_SetDVRConfig",self.userid, NET_DVR_SET_PTZPOS, self.dvrDeviceInfo.struDeviceV30.byStartChan, ctypes.byref(ptzpos), ctypes.sizeof(ptzpos))
+        if res == -1:
+            error_info = self.callCpp("NET_DVR_GetLastError")
+            logging.error("设置PTZ错误信息：" + str(error_info))
+        return res

@@ -28,6 +28,9 @@ class CameraController:
     def get_ptz(self):
         return self.camera_sdk.getPTZ()
 
+    def set_ptz(self, ptz):
+        self.camera_sdk.setPTZ(ptz)
+
     def turn_up(self):
         self.camera_sdk.control(TILT_UP, PTZ_CONTROL_START,7)
         time.sleep(1)
