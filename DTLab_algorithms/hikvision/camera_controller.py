@@ -20,10 +20,10 @@ class CameraController:
         self.camera_sdk.add_dll()
         self.camera_sdk.NET_DVR_Init()
         self.camera_sdk.NET_DVR_Login_V40()
-        self.cap = cv2.VideoCapture(f'rtsp://{self.username}:{self.password}@{self.camera_ip}/Streaming/Channels/101?tcp')
+        self.cap = cv2.VideoCapture(f'rtsp://{self.username}:{self.password}@{self.camera_ip}/Streaming/Channels/101')
 
     def get_frame(self):
-        return self.cap.read()[1]
+        return self.cap.read()
 
     def get_ptz(self):
         return self.camera_sdk.getPTZ()
@@ -32,7 +32,7 @@ class CameraController:
         self.camera_sdk.setPTZ(ptz)
 
     def turn_up(self):
-        self.camera_sdk.control(TILT_UP, PTZ_CONTROL_START,7)
+        self.camera_sdk.control(TILT_UP, PTZ_CONTROL_START, 7)
         time.sleep(1)
         self.camera_sdk.control(TILT_UP, PTZ_CONTROL_STOP, 7)
 
@@ -51,8 +51,7 @@ class CameraController:
         time.sleep(1)
         self.camera_sdk.control(PAN_RIGHT, PTZ_CONTROL_STOP, 7)
 
-
-
-    # def __del__(self):
-    #     self.camera_sdk.NET_DVR_Logout()
-    #     print("CameraController object deleted")
+    def __del__(self):
+        self.camera_sdk.NET_DVR_Logout()
+        self.cap.release()
+        print("CameraController object deleted")
